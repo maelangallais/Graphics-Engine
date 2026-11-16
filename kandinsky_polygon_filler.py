@@ -1,5 +1,5 @@
 #Créé le 11 Novembre 2026
-from kandinsky import set_pixel,get_pixel
+from kandinsky import fill_rect,get_pixel
 
 ent=lambda n:int(n+0.5)
 va=lambda x:-x if x<0 else x
@@ -12,24 +12,17 @@ w=320//t
 h=222//t
 wo=320-w*t
 ho=222-h*t
-for y in range(ho):
-  for x in range(320):
-    set_pixel(x,y,ifc)
-for x in range(wo):
-  for y in range(222):
-    set_pixel(x,y,ifc)
+fill_rect(0,0,320,ho,ifc)
+fill_rect(0,0,wo,222,ifc)
 
 #Version optimisée pour ne faire que des traits de 1 d'épaisseur
-#Mais tout est gâché avec la double boucle for pour simuler un carré
 def dl(p1,p2,col):
  [x1,y1],[x2,y2]=p1,p2
  dx=min(max((x2-x1)/va(y2-y1)if va(y2-y1)!=0 else x2-x1,-1),1)
  dy=min(max((y2-y1)/va(x2-x1)if va(x2-x1)!=0 else y2-y1,-1),1)
  c=va(x2-x1)if va(x2-x1)>va(y2-y1)else va(y2-y1)
  for i in range(c):
-   for x in range(t):
-     for y in range(t):
-       set_pixel(wo+ent((x1+dx*i)/t)*t+x,ho+ent((y1+dy*i)/t)*t+y,col)
+   fill_rect(wo+ent((x1+dx*i)/t)*t,ho+ent((y1+dy*i)/t)*t,t,t,col)
 
 def draw(*val):
   val=list(val[0])
@@ -50,9 +43,7 @@ def circle(x,y,r,col):
     ag=i/s*2*pi
     xp=x+r*cos(ag)
     yp=y+r*sin(ag)
-    for a in range(t):
-      for b in range(t):
-        set_pixel(wo+ent(xp/t)*t+a,ho+ent(yp/t)*t+b,col)
+    fill_rect(wo+ent(xp/t)*t,ho+ent(yp/t)*t,t,t,col)
 
 def fill():
   gp=lambda x,y:get_pixel(wo+x*t,ho+y*t)==col
@@ -97,10 +88,7 @@ def fill():
       Q.append(sp)
     if y>=13:
       for x1,x2 in Q.pop(0):
-        for x in range(x1,x2):
-          for a in range(t):
-            for b in range(t):
-              set_pixel(wo+x*t+a,ho+(y-13)*t+b,col)
+        fill_rect(wo+x1*t,ho+(y-13)*t,(x2-x1)*t,t,col)
 
 draw([[19,2],[43,187],[134,98]])
 draw([[232,67],[187,122],[308,208]])

@@ -43,9 +43,9 @@ A comprehensive shape-drawing library built **exclusively on `set_pixel`**, supp
 ### Polygon Scanline Filler
 [`kandinsky_polygon_filler.py`](kandinsky_polygon_filler.py) · *Created November 11, 2026*
 
-A universal shape engine that draws and scanline-fills **arbitrary closed polygons** (convex or concave) from any list of 3+ points (plus circles) using only `set_pixel` and `get_pixel`.
-- **Corner & Tangent Detection**: Uses an $\mathcal{O}(w)$ scanline pass with local vertical branch tracing (`de`) to distinguish true edge crossings from vertical extrema (sharp top/bottom polygon vertices and circle tangent caps), paired with a lightweight 13-row rolling fill queue (`Q`) to keep memory usage minimal even at full `t = 1` resolution.
-- **Performance Note**: Adjustable pixel scale `t` (default `t = 3`) trades resolution for speed on calculator hardware (`t = 1` works at full resolution with low memory usage, though `get_pixel`/`set_pixel` calls remain slower on physical hardware).
+A universal shape engine that draws and scanline-fills **arbitrary closed polygons** (convex or concave) from any list of 3+ points (plus circles) using `fill_rect` and `get_pixel`.
+- **Corner & Tangent Detection**: Uses an $\mathcal{O}(w)$ scanline pass with local vertical branch tracing (`de`) to distinguish true edge crossings from vertical extrema (sharp top/bottom polygon vertices and circle tangent caps), paired with a lightweight 13-row rolling fill queue (`Q`) and horizontal span `fill_rect` calls to keep both memory usage and rendering time minimal even at full `t = 1` resolution.
+- **Performance Note**: Adjustable pixel scale `t` (default `t = 3`) trades resolution for speed on calculator hardware.
 
 ---
 
