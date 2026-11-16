@@ -55,38 +55,52 @@ def circle(x,y,r,col):
         set_pixel(wo+ent(xp/t)*t+a,ho+ent(yp/t)*t+b,col)
 
 def fill():
-  for y in range(h):
-    for x in range(w):
-      c=0
-      p=False
-      for z in range(w-x):
-        """
-C'est ici qu'il faudra améliorer les calculs
-Il compte tous les coins comme une seule intersection
-là où il faudrait en compter deux : 
- - un trait qui arrive
- - un trait qui repart
-La solution serait peut-être de vérifier l'angle
-de chaque côté à chaque intersection pour vérifier que
-c'est un angle ou une surface plate et la compter ou non
-Sinon passer toutes mes lignes en courbes de bezier
-pour éviter les get_pixel() et privilégier les 
-calculs théoriques absolus sur des formes plutôt que
-sur ce que l'on peut voir à l'écran
-Superbe vidéo sur le sujet : 
-https://www.youtube.com/watch?v=SO83KQuuZvg
-"""
-        if get_pixel(wo+(x+z)*t,ho+y*t)==col:
-          if p:
-            continue
-          c+=1
-          p=True
-        elif p:
-          p=False
-      if c%2:
-        for a in range(t):
-          for b in range(t):
-            set_pixel(wo+x*t+a,ho+y*t+b,col)
+  gp=lambda x,y:get_pixel(wo+x*t,ho+y*t)==col
+  def de(y,x1,x2,dy):
+    for _ in range(12):
+      ny=y+dy
+      if not(0<=ny<h):
+        return 1
+      nx1=-1
+      for x in range(max(0,x1-1),min(w,x2+2)):
+        if gp(x,ny):
+          if nx1<0:
+            nx1=nx2=x
+            while nx1>0 and gp(nx1-1,ny):
+              nx1-=1
+            while nx2+1<w and gp(nx2+1,ny):
+              nx2+=1
+          elif x>nx2:
+            return 0
+      if nx1<0:
+        return 1
+      for x in range(max(0,nx1-1),min(w,nx2+2)):
+        if(x<x1-1 or x>x2+1)and gp(x,y):
+          return 0
+      x1,x2,y=nx1,nx2,ny
+    return 0
+  Q=[]
+  for y in range(h+13):
+    if y<h:
+      c=px=x=0
+      sp=[]
+      while x<w:
+        if gp(x,y):
+          x1=x
+          while x+1<w and gp(x+1,y):
+            x+=1
+          if c%2 and px<x1:
+            sp.append((px,x1))
+          c+=2 if de(y,x1,x,-1)or de(y,x1,x,1)else 1
+          px=x+1
+        x+=1
+      Q.append(sp)
+    if y>=13:
+      for x1,x2 in Q.pop(0):
+        for x in range(x1,x2):
+          for a in range(t):
+            for b in range(t):
+              set_pixel(wo+x*t+a,ho+(y-13)*t+b,col)
 
 draw([[19,2],[43,187],[134,98]])
 draw([[232,67],[187,122],[308,208]])

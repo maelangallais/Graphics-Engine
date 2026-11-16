@@ -9,7 +9,7 @@ A complete **2D rasterization and geometric drawing suite** built from scratch i
 ```
 Graphics-Engine/
 ├── kandinsky_shapes.py              # All-in-one geometric shape library (100% set_pixel)
-├── kandinsky_polygon_filler.py      # Experimental point-based polygon & circle scanline filler
+├── kandinsky_polygon_filler.py      # Point-based polygon & circle scanline filler
 ├── circles/
 │   ├── optimized_circle.py          # Optimized circle & disk rasterization functions
 │   └── experiments/
@@ -40,11 +40,12 @@ A comprehensive shape-drawing library built **exclusively on `set_pixel`**, supp
 
 *(Note: Uses the original basic circle implementation rather than the later optimized versions in `circles/optimized_circle.py`.)*
 
-### Polygon Scanline Filler *(Experimental)*
+### Polygon Scanline Filler
 [`kandinsky_polygon_filler.py`](kandinsky_polygon_filler.py) · *Created November 11, 2026*
 
-An experimental universal shape engine that draws and scanline-fills **arbitrary closed polygons** from any list of 3+ points (plus circles) using `set_pixel` and `get_pixel` parity ray-casting.
-- **Known Limitations**: This is an early experimental prototype and is **very error-prone** — corners/vertices frequently cause scanline parity glitches (see the open enhancement issue), and setting pixel scale `t = 1` is very slow on hardware.
+A universal shape engine that draws and scanline-fills **arbitrary closed polygons** (convex or concave) from any list of 3+ points (plus circles) using only `set_pixel` and `get_pixel`.
+- **Corner & Tangent Detection**: Uses an $\mathcal{O}(w)$ scanline pass with local vertical branch tracing (`de`) to distinguish true edge crossings from vertical extrema (sharp top/bottom polygon vertices and circle tangent caps), paired with a lightweight 13-row rolling fill queue (`Q`) to keep memory usage minimal even at full `t = 1` resolution.
+- **Performance Note**: Adjustable pixel scale `t` (default `t = 3`) trades resolution for speed on calculator hardware (`t = 1` works at full resolution with low memory usage, though `get_pixel`/`set_pixel` calls remain slower on physical hardware).
 
 ---
 
